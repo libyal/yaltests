@@ -25,6 +25,8 @@ assert_availability_binary()
 	fi
 }
 
+DFVFS_SNIPPETS="${HOME}/Projects/dfvfs-snippets";
+
 if test $# -ne 1;
 then
 	echo "Usage: compare-hashes.sh IMAGE";
@@ -33,6 +35,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
+assert_availability_binary ewfmount;
 assert_availability_binary gdisk;
 
 set -e;
@@ -49,69 +52,144 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.raw ]];
+if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.raw ]];
 then
 	echo "Hashing ${IMAGE} with OS (ntfs3g)";
 
-	SECTOR_SIZE=`gdisk -l "${IMAGE}" | grep 'Sector size (logical):' | sed 's/^Sector size (logical): //;s/ bytes$//'`;
-
-	OLDIFS=${IFS};
-	IFS="
-";
-
-	PARTITIONS=`gdisk -l "${IMAGE}" | sed '1,/Number  Start (sector)    End (sector)  Size       Code  Name/ d'`;
-
-	for PARTITION in ${PARTITIONS};
-	do
- 		PARTITION_NUMBER=`echo ${PARTITION} | awk '{ print $1 }'`;
- 		START_SECTOR=`echo ${PARTITION} | awk '{ print $2 }'`;
- 		START_OFFSET=$(( ${START_SECTOR} * ${SECTOR_SIZE} ));
-
-		MOUNT_POINT="p${PARTITION_NUMBER}";
-
-		if test -e ${MOUNT_POINT};
+	if [[ "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 ]];
+	then
+		if test -e "fuse";
 		then
-			echo "Mount point: ${MOUNT_POINT} already exists";
+			echo "Mount point: fuse already exists";
 			echo "";
 
 			exit ${EXIT_FAILURE};
 		fi
-		mkdir ${MOUNT_POINT};
+		mkdir -p fuse;
 
-		sudo mount -oro,offset=${START_OFFSET},show_sys_files,streams_interface=windows "${IMAGE}" ${MOUNT_POINT};
+		ewfmount -X allow_root "${IMAGE}" fuse;
 
-		time PYTHONPATH=${HOME}/Projects/dfvfs-snippets/ python3 ${HOME}/Projects/dfvfs-snippets/scripts/recursive_hasher.py --output_file ntfs3g.${MOUNT_POINT}.hashes ${MOUNT_POINT};
+		RAW_IMAGE="fuse/ewf1";
 
-		sudo umount ${MOUNT_POINT};
+	elif [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.raw ]];
+	then
+		RAW_IMAGE=${IMAGE};
+	fi
+	if test -e p1;
+	then
+		echo "Mount point: p1 already exists";
+		echo "";
+
+		exit ${EXIT_FAILURE};
+	fi
+	mkdir "p1";
+
+	set +e;
+
+	# Try mounting the image as a volume image first.
+	sudo mount -oro,show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" "p1";
+	RESULT=$?;
+
+	set -e;
+
+	if test ${RESULT} -eq ${EXIT_SUCCESS};
+	then
+		time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file ntfs3g.p1.hashes "p1";
+
+		sudo umount "p1";
+	fi
+	sleep 1;
+
+	rmdir "p1";
+
+	if test ${RESULT} -ne ${EXIT_SUCCESS};
+	then
+		SECTOR_SIZE=`gdisk -l "${RAW_IMAGE}" | grep 'Sector size (logical):' | sed 's/^Sector size (logical): //;s/ bytes$//' 2> /dev/null`;
+
+		OLDIFS=${IFS};
+		IFS="
+";
+
+		PARTITIONS=`gdisk -l "${RAW_IMAGE}" | sed '1,/Number  Start (sector)    End (sector)  Size       Code  Name/ d' 2> /dev/null`;
+
+		for PARTITION in ${PARTITIONS};
+		do
+			PARTITION_NUMBER=`echo ${PARTITION} | awk '{ print $1 }'`;
+			START_SECTOR=`echo ${PARTITION} | awk '{ print $2 }'`;
+			START_OFFSET=$(( ${START_SECTOR} * ${SECTOR_SIZE} ));
+
+			MOUNT_POINT="p${PARTITION_NUMBER}";
+
+			if test -e ${MOUNT_POINT};
+			then
+				echo "Mount point: ${MOUNT_POINT} already exists";
+				echo "";
+
+				exit ${EXIT_FAILURE};
+			fi
+			mkdir ${MOUNT_POINT};
+
+			set +e;
+
+			sudo mount -oro,offset=${START_OFFSET},show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" ${MOUNT_POINT};
+			RESULT=$?;
+
+			set -e;
+
+			if test ${RESULT} -eq ${EXIT_SUCCESS};
+			then
+				time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file ntfs3g.${MOUNT_POINT}.hashes ${MOUNT_POINT};
+
+				sudo umount ${MOUNT_POINT};
+			fi
+			sleep 1;
+
+			rmdir ${MOUNT_POINT};
+		done
+
+		IFS=${OLDIFS};
+	fi
+	if [[ "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 ]];
+	then
+		sudo umount "fuse";
 
 		sleep 1;
 
-		rmdir ${MOUNT_POINT};
-	done
-
-	IFS=${OLDIFS};
+		rmdir "fuse";
+	fi
+	set +e;
 
 	cat ntfs3g.p*.hashes > ntfs3g.hashes;
+
+	set -e;
 
 	rm -f ntfs3g.p*.hashes;
 fi
 
 echo "Hashing ${IMAGE} with TSK (libtsk/pytsk)";
-time PYTHONPATH=${HOME}/Projects/dfvfs-snippets/ python3 ${HOME}/Projects/dfvfs-snippets/scripts/recursive_hasher.py --back-end TSK --output_file tsk.hashes --partitions all --snapshots none "${IMAGE}";
+time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end TSK --output_file tsk.hashes --partitions all --snapshots none "${IMAGE}";
 
 echo "";
 echo "Hashing ${IMAGE} with FSNTFS (libfsntfs/pyfsntfs)";
-time PYTHONPATH=${HOME}/Projects/dfvfs-snippets/ python3 ${HOME}/Projects/dfvfs-snippets/scripts/recursive_hasher.py --back-end NTFS --output_file fsntfs.hashes --partitions all --snapshots none "${IMAGE}";
+time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end NTFS --output_file fsntfs.hashes --partitions all --snapshots none "${IMAGE}";
 
-cat ntfs3g.hashes | sed 's?\t?\t/?' | sort -k 2 > ntfs3g.hashes.sorted;
+if test -f ntfs3g.hashes;
+then
+	cat ntfs3g.hashes | sed 's?\t?\t/?' | sort -k 2 > ntfs3g.hashes.sorted;
+fi
 cat tsk.hashes | sort -k 2 > tsk.hashes.sorted;
 cat fsntfs.hashes | sort -k 2 > fsntfs.hashes.sorted;
 
 echo "";
+echo "Comparing TSK (libtsk/pytsk) and FSNTFS (libfsntfs/pyfsntfs) for ${IMAGE}";
 diff --report-identical-files tsk.hashes.sorted fsntfs.hashes.sorted;
 
-echo "";
-diff --report-identical-files ntfs3g.hashes.sorted fsntfs.hashes.sorted;
+if test -f ntfs3g.hashes;
+then
+	echo "";
+	echo "Comparing OS (ntfs3g) and FSNTFS (libfsntfs/pyfsntfs) for ${IMAGE}";
+	diff --report-identical-files ntfs3g.hashes.sorted fsntfs.hashes.sorted;
+fi
 
 echo "";
 
