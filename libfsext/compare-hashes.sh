@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to compare libfsntfs with the operating system NTFS implementation (ntfs3g) and libtsk
+# Script to compare libfsext with the operating system ext implementation and libtsk
 # Using the dfvfs-snippets recursive hasher script.
 
 EXIT_FAILURE=1;
@@ -42,7 +42,7 @@ set -e;
 
 IMAGE=$1;
 
-rm -rf fsntfs.hashes fsntfs.hashes.sorted osntfs.hashes osntfs.hashes.sorted tsk.hashes tsk.hashes.sorted;
+rm -rf fsext.hashes fsext.hashes.sorted osext.hashes osext.hashes.sorted tsk.hashes tsk.hashes.sorted;
 
 if ! test -f "${IMAGE}";
 then
@@ -54,7 +54,7 @@ fi
 
 if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.raw ]];
 then
-	echo "Hashing ${IMAGE} with OS (ntfs3g)";
+	echo "Hashing ${IMAGE} with OS";
 
 	if [[ "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 ]];
 	then
@@ -94,7 +94,7 @@ then
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osntfs.p1.hashes "p1";
+		time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osext.p1.hashes "p1";
 
 		sudo umount "p1";
 	fi
@@ -138,7 +138,7 @@ then
 
 			if test ${RESULT} -eq ${EXIT_SUCCESS};
 			then
-				time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osntfs.${MOUNT_POINT}.hashes ${MOUNT_POINT};
+				time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osext.${MOUNT_POINT}.hashes ${MOUNT_POINT};
 
 				sudo umount ${MOUNT_POINT};
 			fi
@@ -159,36 +159,36 @@ then
 	fi
 	set +e;
 
-	cat osntfs.p*.hashes > osntfs.hashes;
+	cat osext.p*.hashes > osext.hashes;
 
 	set -e;
 
-	rm -f osntfs.p*.hashes;
+	rm -f osext.p*.hashes;
 fi
 
 echo "Hashing ${IMAGE} with TSK (libtsk/pytsk)";
 time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end TSK --output_file tsk.hashes --partitions all --snapshots none "${IMAGE}";
 
 echo "";
-echo "Hashing ${IMAGE} with FSNTFS (libfsntfs/pyfsntfs)";
-time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end NTFS --output_file fsntfs.hashes --partitions all --snapshots none "${IMAGE}";
+echo "Hashing ${IMAGE} with FSEXT (libfsext/pyfsext)";
+time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end EXT --output_file fsext.hashes --partitions all --snapshots none "${IMAGE}";
 
-if test -f osntfs.hashes;
+if test -f osext.hashes;
 then
-	cat osntfs.hashes | sed 's?\t?\t/?' | sort -k 2 > osntfs.hashes.sorted;
+	cat osext.hashes | sed 's?\t?\t/?' | sort -k 2 > osext.hashes.sorted;
 fi
 cat tsk.hashes | sort -k 2 > tsk.hashes.sorted;
-cat fsntfs.hashes | sort -k 2 > fsntfs.hashes.sorted;
+cat fsext.hashes | sort -k 2 > fsext.hashes.sorted;
 
 echo "";
-echo "Comparing TSK (libtsk/pytsk) and FSNTFS (libfsntfs/pyfsntfs) for ${IMAGE}";
-diff --report-identical-files tsk.hashes.sorted fsntfs.hashes.sorted;
+echo "Comparing TSK (libtsk/pytsk) and FSEXT (libfsext/pyfsext) for ${IMAGE}";
+diff --report-identical-files tsk.hashes.sorted fsext.hashes.sorted;
 
-if test -f osntfs.hashes;
+if test -f osext.hashes;
 then
 	echo "";
-	echo "Comparing OS (ntfs3g) and FSNTFS (libfsntfs/pyfsntfs) for ${IMAGE}";
-	diff --report-identical-files osntfs.hashes.sorted fsntfs.hashes.sorted;
+	echo "Comparing OS and FSEXT (libfsext/pyfsext) for ${IMAGE}";
+	diff --report-identical-files osext.hashes.sorted fsext.hashes.sorted;
 fi
 
 echo "";
