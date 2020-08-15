@@ -82,25 +82,25 @@ then
 
 		exit ${EXIT_FAILURE};
 	fi
-	mkdir "p1";
+	mkdir p1;
 
 	set +e;
 
 	# Try mounting the image as a volume image first.
-	sudo mount -oro,show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" "p1";
+	sudo mount -oro,show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" p1;
 	RESULT=$?;
 
 	set -e;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osntfs.p1.hashes "p1";
+		time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osntfs.p1.hashes p1;
 
-		sudo umount "p1";
+		sudo umount p1;
 	fi
 	sleep 1;
 
-	rmdir "p1";
+	rmdir p1;
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
 	then
