@@ -87,7 +87,7 @@ then
 	set +e;
 
 	# Try mounting the image as a volume image first.
-	sudo mount -oro,show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" p1;
+	sudo mount -oro "${RAW_IMAGE}" p1;
 	RESULT=$?;
 
 	set -e;
@@ -131,7 +131,7 @@ then
 
 			set +e;
 
-			sudo mount -oro,offset=${START_OFFSET},show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" ${MOUNT_POINT};
+			sudo mount -oro,offset=${START_OFFSET} "${RAW_IMAGE}" ${MOUNT_POINT};
 			RESULT=$?;
 
 			set -e;
