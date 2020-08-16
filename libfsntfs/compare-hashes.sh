@@ -52,7 +52,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.raw ]];
+if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.img || "${IMAGE}" == *.raw ]];
 then
 	echo "Hashing ${IMAGE} with OS (ntfs3g)";
 
@@ -71,7 +71,7 @@ then
 
 		RAW_IMAGE="fuse/ewf1";
 
-	elif [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.raw ]];
+	elif [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.img || "${IMAGE}" == *.raw ]];
 	then
 		RAW_IMAGE=${IMAGE};
 	fi

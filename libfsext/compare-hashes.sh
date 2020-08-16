@@ -52,7 +52,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.raw ]];
+if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.img || "${IMAGE}" == *.raw ]];
 then
 	echo "Hashing ${IMAGE} with OS";
 
@@ -71,7 +71,7 @@ then
 
 		RAW_IMAGE="fuse/ewf1";
 
-	elif [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.raw ]];
+	elif [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.img || "${IMAGE}" == *.raw ]];
 	then
 		RAW_IMAGE=${IMAGE};
 	fi
@@ -87,7 +87,7 @@ then
 	set +e;
 
 	# Try mounting the image as a volume image first.
-	sudo mount -oro "${RAW_IMAGE}" p1;
+	sudo mount -oro,noload "${RAW_IMAGE}" p1;
 	RESULT=$?;
 
 	set -e;
@@ -131,7 +131,7 @@ then
 
 			set +e;
 
-			sudo mount -oro,offset=${START_OFFSET} "${RAW_IMAGE}" ${MOUNT_POINT};
+			sudo mount -oro,noload,offset=${START_OFFSET} "${RAW_IMAGE}" ${MOUNT_POINT};
 			RESULT=$?;
 
 			set -e;
