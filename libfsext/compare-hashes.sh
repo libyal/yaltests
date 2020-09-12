@@ -36,7 +36,9 @@ then
 fi
 
 assert_availability_binary ewfmount;
+assert_availability_binary file;
 assert_availability_binary gdisk;
+assert_availability_binary qcowmount;
 
 set -e;
 
@@ -52,10 +54,17 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.img || "${IMAGE}" == *.raw ]];
+if [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 || "${IMAGE}" == *.img  || "${IMAGE}" == *.qcow2 || "${IMAGE}" == *.raw ]];
 then
+	IS_QCOW=0;
+
 	echo "Hashing ${IMAGE} with OS";
 
+	if [[ "${IMAGE}" == *.img ]];
+	then
+		file "${IMAGE}" | grep QCOW >/dev/null;
+		IS_QCOW=1;
+	fi
 	if [[ "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 ]];
 	then
 		if test -e "fuse";
@@ -70,6 +79,21 @@ then
 		ewfmount -X allow_root "${IMAGE}" fuse;
 
 		RAW_IMAGE="fuse/ewf1";
+
+	elif [[ "${IMAGE}" == *.qcow2 || ${IS_QCOW} -ne 0 ]];
+	then
+		if test -e "fuse";
+		then
+			echo "Mount point: fuse already exists";
+			echo "";
+
+			exit ${EXIT_FAILURE};
+		fi
+		mkdir -p fuse;
+
+		qcowmount -X allow_root "${IMAGE}" fuse;
+
+		RAW_IMAGE="fuse/qcow1";
 
 	elif [[ "${IMAGE}" == *.dd || "${IMAGE}" == *.img || "${IMAGE}" == *.raw ]];
 	then
@@ -95,7 +119,6 @@ then
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
 		time sudo su -c "PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osext.p1.hashes p1";
-
 		sudo umount p1;
 	fi
 	sleep 1;
@@ -139,7 +162,6 @@ then
 			if test ${RESULT} -eq ${EXIT_SUCCESS};
 			then
 				time sudo su -c "PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osext.${MOUNT_POINT}.hashes ${MOUNT_POINT}";
-
 				sudo umount ${MOUNT_POINT};
 			fi
 			sleep 1;
@@ -149,7 +171,7 @@ then
 
 		IFS=${OLDIFS};
 	fi
-	if [[ "${IMAGE}" == *.e01 || "${IMAGE}" == *.E01 ]];
+	if [[ -d "fuse" ]];
 	then
 		sudo umount "fuse";
 
