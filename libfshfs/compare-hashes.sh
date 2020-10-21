@@ -26,6 +26,8 @@ assert_availability_binary()
 }
 
 DFVFS_SNIPPETS="${HOME}/Projects/dfvfs-snippets";
+EWFMOUNT="ewfmount";
+QCOWMOUNT="qcowmount";
 
 if test $# -ne 1;
 then
@@ -76,7 +78,7 @@ then
 		fi
 		mkdir -p fuse;
 
-		ewfmount -X allow_root "${IMAGE}" fuse;
+		${EWFMOUNT} -X allow_root "${IMAGE}" fuse;
 
 		RAW_IMAGE="fuse/ewf1";
 
@@ -91,7 +93,7 @@ then
 		fi
 		mkdir -p fuse;
 
-		qcowmount -X allow_root "${IMAGE}" fuse;
+		${QCOWMOUNT} -X allow_root "${IMAGE}" fuse;
 
 		RAW_IMAGE="fuse/qcow1";
 
