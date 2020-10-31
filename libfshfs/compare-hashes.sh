@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to compare libfshfs with the operating system hfs implementation and libtsk
+# Script to compare libfshfs with the operating system HFS/HFS+/HFSX implementation and libtsk
 # Using the dfvfs-snippets recursive hasher script.
 
 EXIT_FAILURE=1;
