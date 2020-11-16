@@ -113,7 +113,7 @@ then
 	set +e;
 
 	# Try mounting the image as a volume image first.
-	sudo mount -oro "${RAW_IMAGE}" p1;
+	sudo mount -oro,norecovery "${RAW_IMAGE}" p1;
 	RESULT=$?;
 
 	set -e;
@@ -156,7 +156,7 @@ then
 
 			set +e;
 
-			sudo mount -oro,offset=${START_OFFSET} "${RAW_IMAGE}" ${MOUNT_POINT};
+			sudo mount -oro,norecovery,offset=${START_OFFSET} "${RAW_IMAGE}" ${MOUNT_POINT};
 			RESULT=$?;
 
 			set -e;
