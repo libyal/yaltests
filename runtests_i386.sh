@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Script to run tests on s390x
+# Script to run tests on i386
 # Requires Linux with QEMU and Docker
 
 LIBRARY_NAME=`basename $PWD`;
 
 cat >Dockerfile <<EOT
-FROM s390x/ubuntu:18.04
+FROM i386/ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -22,10 +22,10 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 EOT
 
-TAG="test_${LIBRARY_NAME}_on_s390x";
+TAG="test_${LIBRARY_NAME}_on_i386";
 
 make clean
-docker image build --file Dockerfile --platform linux/s390x --tag ${TAG} .
+docker image build --file Dockerfile --platform linux/i386 --tag ${TAG} .
 docker run -t -v "${PWD}:/${LIBRARY_NAME}:z" ${TAG} sh -c "cd ${LIBRARY_NAME} && tests/build.sh && tests/runtests.sh"
 
 rm -f Dockerfile
