@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to compare multiple versions of libfsntfs.
+# Script to compare multiple versions of a libyal file system library.
 
 EXIT_FAILURE=1;
 EXIT_SUCCESS=0;
@@ -29,7 +29,7 @@ QCOWMOUNT="qcowmount";
 
 if test $# -ne 3;
 then
-	echo "Usage: compare-versions.sh BASE_FSNTFSINFO TEST_FSNTFSINFO IMAGE";
+	echo "Usage: compare-versions.sh BASE_INFO_TOOL TEST_INFO_TOOL IMAGE";
 	echo "";
 
 	exit ${EXIT_FAILURE};
@@ -42,21 +42,21 @@ assert_availability_binary qcowmount;
 
 set -e;
 
-BASE_FSNTFSINFO=$1;
+BASE_INFO_TOOL=$1;
 
-if ! test -x "${BASE_FSNTFSINFO}";
+if ! test -x "${BASE_INFO_TOOL}";
 then
-	echo "Missing base version of fsntfsinfo";
+	echo "Missing base version of info tool";
 	echo "";
 
 	exit ${EXIT_FAILURE};
 fi
 
-TEST_FSNTFSINFO=$2;
+TEST_INFO_TOOL=$2;
 
-if ! test -x "${TEST_FSNTFSINFO}";
+if ! test -x "${TEST_INFO_TOOL}";
 then
-	echo "Missing test version of fsntfsinfo";
+	echo "Missing test version of info tool";
 	echo "";
 
 	exit ${EXIT_FAILURE};
@@ -113,22 +113,23 @@ else
 	RAW_IMAGE=${IMAGE};
 fi
 
-BASE_VERSION=`${BASE_FSNTFSINFO} -V | head -n1 | sed 's/^[^0-9]*\([0-9][0-9]*\)$/\1/'`;
-TEST_VERSION=`${TEST_FSNTFSINFO} -V | head -n1 | sed 's/^[^0-9]*\([0-9][0-9]*\)$/\1/'`;
+INFO_TOOL_NAME=`basename ${BASE_INFO_TOOL}`;
+BASE_VERSION=`${BASE_INFO_TOOL} -V | head -n1 | sed 's/^[^ ] //'`;
+TEST_VERSION=`${TEST_INFO_TOOL} -V | head -n1 | sed 's/^[^ ] //'`;
 
 set +e;
 
-# Test if fsntfsinfo is able to find a NTFS volume.
-${BASE_FSNTFSINFO} ${RAW_IMAGE} > /dev/null 2>&1;
+# Test if info tool is able to find a supported volume.
+${BASE_INFO_TOOL} ${RAW_IMAGE} > /dev/null 2>&1;
 RESULT=$?;
 
 set -e;
 
 if test ${RESULT} -eq ${EXIT_SUCCESS};
 then
-	echo "Comparing fsntfsinfo ${TEST_VERSION} with ${BASE_VERSION} on p1 of ${IMAGE}";
-	${BASE_FSNTFSINFO} -B p1.base.bodyfile -d -H ${RAW_IMAGE} > /dev/null;
-	${TEST_FSNTFSINFO} -B p1.test.bodyfile -d -H ${RAW_IMAGE} > /dev/null;
+	echo "Comparing ${INFO_TOOL_NAME} ${TEST_VERSION} with ${BASE_VERSION} on p1 of ${IMAGE}";
+	${BASE_INFO_TOOL} -B p1.base.bodyfile -d -H ${RAW_IMAGE} > /dev/null;
+	${TEST_INFO_TOOL} -B p1.test.bodyfile -d -H ${RAW_IMAGE} > /dev/null;
 	diff --report-identical-files p1.base.bodyfile p1.test.bodyfile;
 	rm -f p1.base.bodyfile p1.test.bodyfile;
 	echo "";
@@ -154,17 +155,17 @@ then
 
 		set +e;
 
-		# Test if fsntfsinfo is able to find a NTFS volume.
-		${BASE_FSNTFSINFO} -o ${START_OFFSET} ${RAW_IMAGE} > /dev/null 2>&1;
+		# Test if info tool is able to find a supported volume.
+		${BASE_INFO_TOOL} -o ${START_OFFSET} ${RAW_IMAGE} > /dev/null 2>&1;
 		RESULT=$?;
 
 		set -e;
 
 		if test ${RESULT} -eq ${EXIT_SUCCESS};
 		then
-			echo "Comparing fsntfsinfo ${TEST_VERSION} with ${BASE_VERSION} on ${MOUNT_POINT} of ${IMAGE}";
-			${BASE_FSNTFSINFO} -B ${MOUNT_POINT}.base.bodyfile -d -H -o ${START_OFFSET} ${RAW_IMAGE} > /dev/null;
-			${TEST_FSNTFSINFO} -B ${MOUNT_POINT}.test.bodyfile -d -H -o ${START_OFFSET} ${RAW_IMAGE} > /dev/null;
+			echo "Comparing ${INFO_TOOL_NAME} ${TEST_VERSION} with ${BASE_VERSION} on ${MOUNT_POINT} of ${IMAGE}";
+			${BASE_INFO_TOOL} -B ${MOUNT_POINT}.base.bodyfile -d -H -o ${START_OFFSET} ${RAW_IMAGE} > /dev/null;
+			${TEST_INFO_TOOL} -B ${MOUNT_POINT}.test.bodyfile -d -H -o ${START_OFFSET} ${RAW_IMAGE} > /dev/null;
 			diff --report-identical-files ${MOUNT_POINT}.base.bodyfile ${MOUNT_POINT}.test.bodyfile;
 			rm -f ${MOUNT_POINT}.base.bodyfile ${MOUNT_POINT}.test.bodyfile;
 			echo "";
