@@ -6,7 +6,7 @@
 LIBRARY_NAME=`basename $PWD`;
 
 cat >Dockerfile <<EOT
-FROM s390x/ubuntu:18.04
+FROM s390x/ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
