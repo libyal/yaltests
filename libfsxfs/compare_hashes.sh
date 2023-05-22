@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Script to compare libfsntfs with the operating system NTFS implementation (ntfs3g) and libtsk
-# Using the dfvfs-snippets recursive hasher script.
+# Script to compare libfsxfs with the operating system xfs implementation
+# Using the dfImageTools recursive hasher script.
 
 EXIT_FAILURE=1;
 EXIT_SUCCESS=0;
@@ -25,7 +25,7 @@ assert_availability_binary()
 	fi
 }
 
-DFVFS_SNIPPETS="${HOME}/Projects/dfvfs-snippets";
+DFIMAGETOOLS="${HOME}/Projects/dfimagetools";
 EWFMOUNT="ewfmount";
 QCOWMOUNT="qcowmount";
 
@@ -46,7 +46,7 @@ set -e;
 
 IMAGE=$1;
 
-rm -rf fsntfs.hashes fsntfs.hashes.sorted osntfs.hashes osntfs.hashes.sorted tsk.hashes tsk.hashes.sorted;
+rm -rf fsxfs.hashes fsxfs.hashes.sorted osxfs.hashes osxfs.hashes.sorted;
 
 if ! test -f "${IMAGE}";
 then
@@ -113,14 +113,14 @@ then
 	set +e;
 
 	# Try mounting the image as a volume image first.
-	sudo mount -oro,show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" p1;
+	sudo mount -oro,norecovery "${RAW_IMAGE}" p1;
 	RESULT=$?;
 
 	set -e;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		time sudo su -c "PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osntfs.p1.hashes p1";
+		time sudo su -c "PYTHONPATH=${DFIMAGETOOLS}/ python3 ${DFIMAGETOOLS}/tools/recursive_hasher.py --output_file osxfs.p1.hashes p1";
 		sudo umount p1;
 	fi
 	sleep 1;
@@ -156,14 +156,14 @@ then
 
 			set +e;
 
-			sudo mount -oro,offset=${START_OFFSET},show_sys_files,streams_interface=windows,uid=1000,gid=1000 "${RAW_IMAGE}" ${MOUNT_POINT};
+			sudo mount -oro,norecovery,offset=${START_OFFSET} "${RAW_IMAGE}" ${MOUNT_POINT};
 			RESULT=$?;
 
 			set -e;
 
 			if test ${RESULT} -eq ${EXIT_SUCCESS};
 			then
-				time sudo su -c "PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osntfs.${MOUNT_POINT}.hashes ${MOUNT_POINT}";
+				time sudo su -c "PYTHONPATH=${DFIMAGETOOLS}/ python3 ${DFIMAGETOOLS}/tools/recursive_hasher.py --output_file osxfs.${MOUNT_POINT}.hashes ${MOUNT_POINT}";
 				sudo umount ${MOUNT_POINT};
 			fi
 			sleep 1;
@@ -183,36 +183,27 @@ then
 	fi
 	set +e;
 
-	cat osntfs.p*.hashes > osntfs.hashes;
+	cat osxfs.p*.hashes > osxfs.hashes;
 
 	set -e;
 
-	rm -f osntfs.p*.hashes;
+	rm -f osxfs.p*.hashes;
 fi
 
-echo "Hashing ${IMAGE} with TSK (libtsk/pytsk)";
-time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end TSK --output_file tsk.hashes --partitions all --snapshots none "${IMAGE}";
+echo "Hashing ${IMAGE} with FSXFS (libfsxfs/pyfsxfs)";
+time PYTHONPATH=${DFIMAGETOOLS}/ python3 ${DFIMAGETOOLS}/tools/recursive_hasher.py --output_file fsxfs.hashes --partitions all --snapshots none "${IMAGE}";
 
-echo "";
-echo "Hashing ${IMAGE} with FSNTFS (libfsntfs/pyfsntfs)";
-time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end NTFS --output_file fsntfs.hashes --partitions all --snapshots none "${IMAGE}";
-
-if test -f osntfs.hashes;
+if test -f osxfs.hashes;
 then
-	cat osntfs.hashes | sed 's?\t?\t/?' | sort -k 2 > osntfs.hashes.sorted;
+	cat osxfs.hashes | sed 's?\t?\t/?' | sort -k 2 > osxfs.hashes.sorted;
 fi
-cat tsk.hashes | sort -k 2 > tsk.hashes.sorted;
-cat fsntfs.hashes | sort -k 2 > fsntfs.hashes.sorted;
+cat fsxfs.hashes | sort -k 2 > fsxfs.hashes.sorted;
 
-echo "";
-echo "Comparing TSK (libtsk/pytsk) and FSNTFS (libfsntfs/pyfsntfs) for ${IMAGE}";
-diff --report-identical-files tsk.hashes.sorted fsntfs.hashes.sorted;
-
-if test -f osntfs.hashes;
+if test -f osxfs.hashes;
 then
 	echo "";
-	echo "Comparing OS (ntfs3g) and FSNTFS (libfsntfs/pyfsntfs) for ${IMAGE}";
-	diff --report-identical-files osntfs.hashes.sorted fsntfs.hashes.sorted;
+	echo "Comparing OS and FSXFS (libfsxfs/pyfsxfs) for ${IMAGE}";
+	diff --report-identical-files osxfs.hashes.sorted fsxfs.hashes.sorted;
 fi
 
 echo "";

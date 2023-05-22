@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script to run Python tests on s390x
 # Requires Linux with QEMU and Docker

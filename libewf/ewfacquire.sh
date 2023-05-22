@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script to test ewfacquire with various options
 # Requires Linux with ewfacquire

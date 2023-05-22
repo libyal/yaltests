@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script to compare libfsext with the operating system ext implementation and libtsk
-# Using the dfvfs-snippets recursive hasher script.
+# Using the dfImageTools recursive hasher script.
 
 EXIT_FAILURE=1;
 EXIT_SUCCESS=0;
@@ -25,7 +25,7 @@ assert_availability_binary()
 	fi
 }
 
-DFVFS_SNIPPETS="${HOME}/Projects/dfvfs-snippets";
+DFIMAGETOOLS="${HOME}/Projects/dfimagetools";
 EWFMOUNT="ewfmount";
 QCOWMOUNT="qcowmount";
 
@@ -120,7 +120,7 @@ then
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		time sudo su -c "PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osext.p1.hashes p1";
+		time sudo su -c "PYTHONPATH=${DFIMAGETOOLS}/ python3 ${DFIMAGETOOLS}/tools/recursive_hasher.py --output_file osext.p1.hashes p1";
 		sudo umount p1;
 	fi
 	sleep 1;
@@ -163,7 +163,7 @@ then
 
 			if test ${RESULT} -eq ${EXIT_SUCCESS};
 			then
-				time sudo su -c "PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --output_file osext.${MOUNT_POINT}.hashes ${MOUNT_POINT}";
+				time sudo su -c "PYTHONPATH=${DFIMAGETOOLS}/ python3 ${DFIMAGETOOLS}/tools/recursive_hasher.py --output_file osext.${MOUNT_POINT}.hashes ${MOUNT_POINT}";
 				sudo umount ${MOUNT_POINT};
 			fi
 			sleep 1;
@@ -191,11 +191,11 @@ then
 fi
 
 echo "Hashing ${IMAGE} with TSK (libtsk/pytsk)";
-time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end TSK --output_file tsk.hashes --partitions all --snapshots none "${IMAGE}";
+time PYTHONPATH=${DFIMAGETOOLS}/ python3 ${DFIMAGETOOLS}/tools/recursive_hasher.py --back-end TSK --output_file tsk.hashes --partitions all --snapshots none "${IMAGE}";
 
 echo "";
 echo "Hashing ${IMAGE} with FSEXT (libfsext/pyfsext)";
-time PYTHONPATH=${DFVFS_SNIPPETS}/ python3 ${DFVFS_SNIPPETS}/scripts/recursive_hasher.py --back-end EXT --output_file fsext.hashes --partitions all --snapshots none "${IMAGE}";
+time PYTHONPATH=${DFIMAGETOOLS}/ python3 ${DFIMAGETOOLS}/tools/recursive_hasher.py --back-end EXT --output_file fsext.hashes --partitions all --snapshots none "${IMAGE}";
 
 if test -f osext.hashes;
 then

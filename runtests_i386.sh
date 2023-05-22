@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script to run tests on i386
 # Requires Linux with QEMU and Docker
