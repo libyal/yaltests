@@ -25,7 +25,7 @@ do
 	PARTITIONS_ARGUMENT=`echo ${TRACEV3_FILE} | grep -e '^/p[0-9][0-9]*/' | sed 's?^/p\([0-9][0-9]*\)/.*?--partitions=\1?'`;
 	TRACEV3_FILE=`echo ${TRACEV3_FILE} | sed 's?^/p[0-9][0-9]*/?/?'`;
 
-	VOLUMES_ARGUMENT=`echo ${TRACEV3_FILE} | grep -e '/^apfs[0-9][0-9]*' | sed 's?^/apfs\([0-9][0-9]*\)/.*?--volumes=\1?'`;
+	VOLUMES_ARGUMENT=`echo ${TRACEV3_FILE} | grep -e '^/apfs[0-9][0-9]*' | sed 's?^/apfs\([0-9][0-9]*\)/.*?--volumes=\1?'`;
 	TRACEV3_FILE=`echo ${TRACEV3_FILE} | sed 's?^/apfs[0-9][0-9]*/?/?'`;
 
 	echo "Processing: ${TRACEV3_FILE}";
