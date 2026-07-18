@@ -1,0 +1,12 @@
+Inode: 28   Type: character special    Mode:  0644   Flags: 0x0
+Generation: 196788458    Version: 0x00000000:00000001
+User:     0   Group:     0   Project:     0   Size: 0
+File ACL: 0
+Links: 1   Blockcount: 0
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a0df2fc:db3fa098 -- Wed May 20 17:44:28 2026
+ atime: 0x6a0df2fc:db3fa098 -- Wed May 20 17:44:28 2026
+ mtime: 0x6a0df2fc:db3fa098 -- Wed May 20 17:44:28 2026
+crtime: 0x6a0df2fc:db3fa098 -- Wed May 20 17:44:28 2026
+Size of extra inode fields: 32
+Device major/minor number: 13:68 (hex 0d:44)

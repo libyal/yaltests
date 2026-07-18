@@ -1,0 +1,12 @@
+# clitooltester test.
+---
+name: fsextinfo
+description: Runs fsextinfo on an input file
+docker:
+  dockerfile: libfsext/Dockerfile
+  tag: yaltests/libfsext
+command: libfsext/fsexttools/fsextinfo -E %inode_number% -o %volume_offset% %input%
+stdout:
+  normalizer: libfsext/fsextinfo.py
+  reference_file: data/%input%.json
+  validator: scripts/json_validator.py

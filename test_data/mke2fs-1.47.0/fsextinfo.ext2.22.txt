@@ -1,0 +1,17 @@
+fsextinfo 20260626
+
+File entry: 22 information:
+	Inode number		: 22
+	Size			: 0
+	Modification time	: May 20, 2026 17:44:28.893595285 UTC
+	Inode change time	: May 20, 2026 17:44:28.894595276 UTC
+	Access time		: May 20, 2026 17:44:28.893595285 UTC
+	Creation time		: May 20, 2026 17:44:28.893595285 UTC
+	Deletion time		: Not set (0)
+	Number of links		: 1
+	Owner identifier	: 0
+	Group identifier	: 0
+	File mode		: -rw-r--r-- (0100644)
+	Extended attributes:
+		Attribute: 1	: user.myxattr1
+

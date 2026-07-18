@@ -1,0 +1,15 @@
+Inode: 22   Type: regular    Mode:  0644   Flags: 0x80000
+Generation: 612045194    Version: 0x00000000:00000002
+User:     0   Group:     0   Project:     0   Size: 0
+File ACL: 0
+Links: 1   Blockcount: 0
+Fragment:  Address: 0    Number: 0    Size: 0
+ ctime: 0x6a0df2ff:3c37df20 -- Wed May 20 17:44:31 2026
+ atime: 0x6a0df2ff:3bfad644 -- Wed May 20 17:44:31 2026
+ mtime: 0x6a0df2ff:3bfad644 -- Wed May 20 17:44:31 2026
+crtime: 0x6a0df2ff:3bfad644 -- Wed May 20 17:44:31 2026
+Size of extra inode fields: 32
+Extended attributes:
+  user.myxattr1 (25) = "My 1st extended attribute"
+Inode checksum: 0xeadbb557
+EXTENTS:

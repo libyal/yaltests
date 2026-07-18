@@ -1,0 +1,13 @@
+# clitooltester test.
+---
+name: debugfs_stat
+description: Runs debugfs stat on an input file
+docker:
+  dockerfile: e2fsprogs/Dockerfile
+  tag: yaltests/e2fsprogs
+command: debugfs -R "stat <%inode_number%>" %input%
+stdout:
+  normalizer: e2fsprogs/debugfs.py
+  reference_file: data/%input%.json
+  reference_writer: scripts/stat_writer.py
+  validator: scripts/json_validator.py
