@@ -96,7 +96,7 @@ class DebugfsStatOutputParser:
             ) from exception
 
         nanoseconds = None
-        if ":" in date_time_string:
+        if ":" in timestamp_string:
             _, _, extra_precision = timestamp_string.rpartition(":")
             try:
                 extra_precision = int(extra_precision, 16)
@@ -279,7 +279,11 @@ class DebugfsStatOutputParser:
                 pass
 
             elif section == "default":
-                self._parse_section_default(line, result)
+                if line.startswith("debugfs "):
+                    # TODO: parser header
+                    pass
+                else:
+                    self._parse_section_default(line, result)
 
             elif section == "extended_attributes":
                 # TODO: parse extended attributes.

@@ -1,0 +1,13 @@
+Inode: 22   Type: regular    Mode:  0644   Flags: 0x0
+Generation: 813359984    Version: 0x00000003
+User:     0   Group:     0   Size: 0
+File ACL: 513
+Links: 1   Blockcount: 8
+Fragment:  Address: 0    Number: 0    Size: 0
+ctime: 0x6a5badd8 -- Sat Jul 18 16:46:16 2026
+atime: 0x6a5badd8 -- Sat Jul 18 16:46:16 2026
+mtime: 0x6a5badd8 -- Sat Jul 18 16:46:16 2026
+Extended attributes:
+  user.myxattr1 (25) = "My 1st extended attribute"
+BLOCKS:
+
