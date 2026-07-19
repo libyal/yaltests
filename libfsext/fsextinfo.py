@@ -199,14 +199,20 @@ class FsExtInfoOutputParser:
 
         self._parse_header(lines, result)
 
-        if not lines[2].startswith("File entry"):
+        if lines[2] == "Extended File System information:":
+            line_index = 4
+        else:
+            line_index = 2
+
+        if not lines[line_index].startswith("File entry"):
             raise RuntimeError(
                 "Unsupported fsextinfo output - missing file entry section."
             )
 
+        line_index += 1
         section = "file_entry"
 
-        for line in lines[3:]:
+        for line in lines[line_index:]:
             line = line.strip()
             if not line:
                 continue

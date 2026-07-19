@@ -1,0 +1,20 @@
+fshfsinfo 20260626
+
+File entry: 35 information:
+	Identifier		: 35
+	Parent identifier	: 21
+	Name			: xattr1
+	Size			: 0
+	Modification time	: May 21, 2026 01:51:16 UTC
+	Entry modification time	: May 21, 2026 01:51:16 UTC
+	Access time		: May 21, 2026 01:51:16 UTC
+	Creation time		: May 21, 2026 01:51:16 UTC
+	Backup time		: Not set (0)
+	Added time		: May 21, 2026 01:51:16 UTC
+	Number of links		: 1
+	Owner identifier	: 501
+	Group identifier	: 20
+	File mode		: -rw-r--r-- (0100644)
+	Extended attributes:
+		Attribute: 1	: myxattr1
+

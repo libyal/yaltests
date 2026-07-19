@@ -1,3 +1,4 @@
+debugfs 1.47.3 (8-Jul-2025)
 Inode: 28   Type: character special    Mode:  0644   Flags: 0x0
 Generation: 196788458    Version: 0x00000000:00000001
 User:     0   Group:     0   Project:     0   Size: 0

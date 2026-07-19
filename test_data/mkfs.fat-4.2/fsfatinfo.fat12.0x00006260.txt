@@ -1,0 +1,12 @@
+fsfatinfo 20260717
+
+File entry: 25184 information:
+	Identifier		: 0x00006260
+	Name			: testfile1
+	Size			: 8
+	Modification time	: Aug 19, 2026 04:49:36.00
+	Access time		: Aug 19, 2026 00:00:00.00
+	Creation time		: Aug 19, 2026 04:49:36.49
+	File attribute flags	: 0x0020
+		Should be archived (FILE_ATTRIBUTE_ARCHIVE)
+

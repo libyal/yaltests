@@ -1,3 +1,4 @@
+debugfs 1.47.3 (8-Jul-2025)
 Inode: 22   Type: regular    Mode:  0644   Flags: 0x0
 Generation: 813359984    Version: 0x00000003
 User:     0   Group:     0   Size: 0
