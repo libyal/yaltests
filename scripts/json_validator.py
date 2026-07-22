@@ -136,10 +136,16 @@ class CliToolOutputJsonValidator:
         additional_keys = list(keys_in_output - keys_in_reference)
         missing_keys = list(keys_in_reference - keys_in_output)
 
+        # TODO: implement comparison rules based on filter.
+        is_directory = reference_dict["file_mode"] & 0x4000 != 0
+
         value_mismatches = {}
         for key in set(keys_in_output).intersection(keys_in_reference):
             output_value = output_dict[key]
             reference_value = reference_dict[key]
+
+            if is_directory and key == "size":
+                continue
 
             if self._is_date_time_value(reference_value):
                 compare_result = self._compare_date_time_value(
@@ -166,6 +172,10 @@ if __name__ == "__main__":
     argument_parser = argparse.ArgumentParser(
         description="Compares JSON normalized CLI tool output."
     )
+    # TODO: add option for validation configuration that supports
+    # * directory size 0 comparison rule
+    # * date and time value granularity mismatch rule
+
     argument_parser.add_argument(
         "reference_file",
         nargs="?",

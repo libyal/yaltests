@@ -1,0 +1,1 @@
+{ "inode_number": 22, "path": "p1/testdir1/xattr1", "file_mode": "0x81a4", "number_of_links": 1, "user_identifier": 0, "group_identifier": 0, "number_of_blocks": 8, "size": 0, "access_time": "2026-07-18 16:46:16.000000000 +0000", "modification_time": "2026-07-18 16:46:16.000000000 +0000", "creation_time": "-", "change_time": "2026-07-18 16:46:16.000000000 +0000" }

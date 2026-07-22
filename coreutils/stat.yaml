@@ -1,0 +1,15 @@
+# clitooltester test.
+---
+name: stat
+description: Runs coreutils stat on an input file
+docker:
+  dockerfile: coreutils/Dockerfile
+  tag: yaltests/coreutils
+mount:
+  use_sudo: true
+command: "find %mountpoint% -inum %inode_number% -exec stat --format='{ \"inode_number\": %i, \"path\": \"%n\", \"file_mode\": \"0x%f\", \"number_of_links\": %h, \"user_identifier\": %u, \"group_identifier\": %g, \"number_of_blocks\": %b, \"size\": %s, \"access_time\": \"%x\", \"modification_time\": \"%y\", \"creation_time\": \"%w\", \"change_time\": \"%z\" }' {} ;"
+stdout:
+  normalizer: coreutils/custat.py
+  reference_file: data/%input%.json
+  reference_writer: scripts/stat_writer.py
+  validator: scripts/json_validator.py

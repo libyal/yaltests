@@ -51,22 +51,22 @@ class DebugfsStatOutputParserTest(test_lib.BaseTestCase):
             result = debugfs.DebugfsStatOutputParser().parse(file_object)
 
         expected_result = {
-            "access_time": "2026-05-20T17:44:28.893595285Z",
-            "change_time": "2026-05-20T17:44:28.894595276Z",
-            "creation_time": "2026-05-20T17:44:28.893595285Z",
+            "access_time": "2026-07-18T16:46:27.822277576Z",
+            "change_time": "2026-07-18T16:46:27.823277583Z",
+            "creation_time": "2026-07-18T16:46:27.822277576Z",
             "file_mode": 0o100644,
             "file_acl": 0,
             "flags": 0x0,
             "group_identifier": 0,
             "inode_number": 22,
-            "modification_time": "2026-05-20T17:44:28.893595285Z",
-            "nfs_generation_number": 1803167177,
+            "modification_time": "2026-07-18T16:46:27.822277576Z",
+            "nfs_generation_number": 3585206153,
             "number_of_blocks": 0,
             "number_of_links": 1,
             "project_identifier": 0,
             "size": 0,
             "user_identifier": 0,
-            "version": "0x00000000:00000002",
+            "version": "0x00000000:00000003",
         }
         self.assertEqual(result, expected_result)
 
@@ -79,23 +79,23 @@ class DebugfsStatOutputParserTest(test_lib.BaseTestCase):
             result = debugfs.DebugfsStatOutputParser().parse(file_object)
 
         expected_result = {
-            "access_time": "2026-05-20T17:44:31.251573649Z",
-            "change_time": "2026-05-20T17:44:31.252573640Z",
-            "checksum": "0xeadbb557",
-            "creation_time": "2026-05-20T17:44:31.251573649Z",
+            "access_time": "2026-07-18T16:46:29.737290101Z",
+            "change_time": "2026-07-18T16:46:29.738290108Z",
+            "checksum": "0x9fd5c976",
+            "creation_time": "2026-07-18T16:46:29.737290101Z",
             "file_acl": 0,
             "file_mode": 0o100644,
             "flags": 0x80000,
             "group_identifier": 0,
             "inode_number": 22,
-            "modification_time": "2026-05-20T17:44:31.251573649Z",
-            "nfs_generation_number": 612045194,
+            "modification_time": "2026-07-18T16:46:29.737290101Z",
+            "nfs_generation_number": 2324136867,
             "number_of_blocks": 0,
             "number_of_links": 1,
             "project_identifier": 0,
             "size": 0,
             "user_identifier": 0,
-            "version": "0x00000000:00000002",
+            "version": "0x00000000:00000003",
         }
         self.assertEqual(result, expected_result)
 
