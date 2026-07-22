@@ -1,0 +1,13 @@
+# clitooltester test.
+---
+name: stat
+description: Runs Mac OS stat on an input file
+package:
+  path: /usr/bin
+mount:
+command: "find %mountpoint% -inum %identifier% -exec stat -f '{ \"inode_number\": %i, \"path\": \"%N\", \"file_mode\": \"0x%Xp\", \"number_of_links\": %l, \"user_identifier\": %u, \"group_identifier\": %g, \"number_of_blocks\": %b, \"size\": %z, \"access_time\": \"%Fa\", \"modification_time\": \"%Fm\", \"creation_time\": \"%FB\", \"change_time\": \"%Fc\" }' {} ;"
+stdout:
+  normalizer: macos/macos_stat.py
+  reference_file: data/%input%.json
+  reference_writer: scripts/stat_writer.py
+  validator: scripts/json_validator.py

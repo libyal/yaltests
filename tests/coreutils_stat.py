@@ -3,7 +3,7 @@
 import unittest
 
 # Note stat we cannot use stat given Python already has a module named stat
-from coreutils import custat
+from coreutils import coreutils_stat
 
 from tests import test_lib
 
@@ -20,7 +20,7 @@ class StatOutputParserTest(test_lib.BaseTestCase):
         self._skip_if_path_not_exists(test_file)
 
         with open(test_file, encoding="utf-8") as file_object:
-            result = custat.StatOutputParser().parse(file_object)
+            result = coreutils_stat.StatOutputParser().parse(file_object)
 
         expected_result = {
             "access_time": "2026-07-18T16:46:27.822277576Z",

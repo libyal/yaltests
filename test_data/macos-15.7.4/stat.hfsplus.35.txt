@@ -1,0 +1,1 @@
+{ "inode_number": 35, "path": "/tmp/clitooltester/TestVolume/testdir1/xattr1", "file_mode": "0x81ed", "number_of_links": 1, "user_identifier": 501, "group_identifier": 20, "number_of_blocks": 0, "size": 0, "access_time": "1779328276.000000000", "modification_time": "1779328276.000000000", "creation_time": "1779328276.000000000", "change_time": "1779328276.000000000" }

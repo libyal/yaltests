@@ -7,17 +7,17 @@ To create stat output:
 Where FORMAT is:
     '{
         "inode_number": %i,
-        "path": "%n",
-        "file_mode": "0x%f",
-        "number_of_links": %h,
+        "path": "%N",
+        "file_mode": "0x%Xp",
+        "number_of_links": %l,
         "user_identifier": %u,
         "group_identifier": %g,
         "number_of_blocks": %b,
-        "size": %s,
-        "access_time": "%x",
-        "modification_time": "%y",
-        "creation_time": "%w",
-        "change_time": "%z"
+        "size": %z,
+        "access_time": "%Fa",
+        "modification_time": "%Fm",
+        "creation_time": "%FB",
+        "change_time": "%Fc",
     }'
 """
 
@@ -25,6 +25,7 @@ import json
 import sys
 
 from datetime import datetime
+from datetime import timezone
 
 
 class StatOutputParser:
@@ -49,8 +50,7 @@ class StatOutputParser:
         """Converts a stat date and time value to ISO 8601.
 
         Args:
-          value (str): date and time value such as
-              '2026-07-18 16:46:27.822277576 +0000'.
+          value (str): date and time value such as '1779328276.000000000'.
 
         Returns:
           str: ISO 8601 formatted date and time value.
@@ -61,21 +61,23 @@ class StatOutputParser:
         if value == "-":
             return None
 
-        value_length = len(value)
-        if value_length < 35 or not value.endswith(" +0000"):
+        if "." not in value:
             raise RuntimeError(f"Unsupported time value: {value:s}")
 
+        seconds, nanoseconds = value.split(".", maxsplit=1)
+
         try:
-            date_time = datetime.strptime(value[:19], "%Y-%m-%d %H:%M:%S")
-        except ValueError as exception:
+            seconds = int(seconds, 10)
+            nanoseconds = int(nanoseconds, 10)
+            date_time = datetime.fromtimestamp(seconds, timezone.utc)
+        except (TypeError, ValueError) as exception:
             raise RuntimeError(
                 f"Unable to parse date and time: {value:s}"
             ) from exception
 
         iso8610_string = date_time.strftime("%Y-%m-%dT%H:%M:%S")
-        iso8610_string = "".join([iso8610_string, value[19:-6]])
 
-        return f"{iso8610_string:s}Z"
+        return f"{iso8610_string:s}.{nanoseconds:09d}Z"
 
     def _parse_hexadecimal(self, value: str) -> str:
         """Converts a string of a hexadecimal value into an integer.
