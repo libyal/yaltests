@@ -1,0 +1,6 @@
+# yaltests validation rules.
+---
+rules:
+- attributes: [size]
+  condition: "file_mode & 0x4000 != 0"
+  expected_value: 0

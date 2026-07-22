@@ -38,15 +38,11 @@ class CliToolStatWriter:
         file_data = output_file_object.read()
         output_dict = json.loads(file_data)
 
-        filtered_dict = {
+        return {
             attribute_name: output_dict[attribute_name]
             for attribute_name in self._ATTRIBUTE_NAMES
             if attribute_name in output_dict
         }
-        if filtered_dict["file_mode"] & 0x4000 != 0:
-            filtered_dict["size"] = 0
-
-        return filtered_dict
 
 
 if __name__ == "__main__":

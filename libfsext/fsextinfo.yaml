@@ -9,4 +9,4 @@ command: libfsext/fsexttools/fsextinfo -E %inode_number% -o %volume_offset% %inp
 stdout:
   normalizer: libfsext/fsextinfo.py
   reference_file: data/%input%.json
-  validator: scripts/json_validator.py
+  validator: scripts/json_validator.py --rules=libfsext/validation_rules.yaml

@@ -14,7 +14,8 @@ class CliToolOutputJsonValidatorTest(test_lib.BaseTestCase):
 
     def test_compare_date_time_value(self):
         """Tests the _is_date_time_value function."""
-        validator = json_validator.CliToolOutputJsonValidator()
+        rules = []
+        validator = json_validator.CliToolOutputJsonValidator(rules)
 
         result = validator._compare_date_time_value("2026-05-20", "2026-05-20")
         self.assertEqual(result, {})
@@ -77,7 +78,8 @@ class CliToolOutputJsonValidatorTest(test_lib.BaseTestCase):
 
     def test_is_date_time_value(self):
         """Tests the _is_date_time_value function."""
-        validator = json_validator.CliToolOutputJsonValidator()
+        rules = []
+        validator = json_validator.CliToolOutputJsonValidator(rules)
 
         result = validator._is_date_time_value("2026-05-20")
         self.assertTrue(result)
@@ -100,11 +102,73 @@ class CliToolOutputJsonValidatorTest(test_lib.BaseTestCase):
     def test_validate(self):
         """Tests the validate function."""
         test_file = self._get_test_file_path(
+            ["mke2fs-1.47.0", "reference_ext2.23.json"]
+        )
+        self._skip_if_path_not_exists(test_file)
+
+        rules = []
+        validator = json_validator.CliToolOutputJsonValidator(rules)
+
+        normalized_output = {
+            "access_time": "2026-07-18T16:46:27.824277590Z",
+            "change_time": "2026-07-18T16:46:27.825277596Z",
+            "creation_time": "2026-07-18T16:46:27.824277590Z",
+            "file_mode": 16877,
+            "group_identifier": 0,
+            "inode_number": 23,
+            "modification_time": "2026-07-18T16:46:27.824277590Z",
+            "number_of_links": 2,
+            "size": 0,
+            "user_identifier": 0,
+        }
+        file_object = io.BytesIO(json.dumps(normalized_output).encode("utf-8"))
+
+        with open(test_file, encoding="utf-8") as reference_file_object:
+            result = validator.validate(reference_file_object, file_object)
+
+        expected_result = {
+            "additional_attributes": [],
+            "missing_attributes": [],
+            "value_mismatches": {
+                "size": {
+                    "issue": "value mismatch",
+                    "output_value": 0,
+                    "reference_value": 4096,
+                },
+            },
+        }
+        self.assertEqual(result, expected_result)
+
+        rules = [
+            json_validator.ValidationRule.from_dict(
+                {
+                    "attributes": ["size"],
+                    "condition": "file_mode & 0x4000 != 0",
+                    "expected_value": 0,
+                }
+            )
+        ]
+        validator = json_validator.CliToolOutputJsonValidator(rules)
+
+        file_object = io.BytesIO(json.dumps(normalized_output).encode("utf-8"))
+
+        with open(test_file, encoding="utf-8") as reference_file_object:
+            result = validator.validate(reference_file_object, file_object)
+
+        expected_result = {
+            "additional_attributes": [],
+            "missing_attributes": [],
+            "value_mismatches": {},
+        }
+        self.assertEqual(result, expected_result)
+
+        test_file = self._get_test_file_path(
             ["mke2fs-1.47.0", "reference_ext2.22.json"]
         )
         self._skip_if_path_not_exists(test_file)
 
-        validator = json_validator.CliToolOutputJsonValidator()
+        rules = []
+        validator = json_validator.CliToolOutputJsonValidator(rules)
 
         normalized_output = {
             "inode_number": 22,
