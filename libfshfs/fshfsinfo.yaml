@@ -1,0 +1,12 @@
+# clitooltester test.
+---
+name: fshfsinfo
+description: Runs fshfsinfo on an input file
+docker:
+  dockerfile: libfshfs/Dockerfile
+  tag: yaltests/libfshfs
+command: libfshfs/fshfstools/fshfsinfo -E %identifier% -o %volume_offset% %input%
+stdout:
+  normalizer: libfshfs/fshfsinfo.py
+  reference_file: data/%input%.json
+  validator: scripts/json_validator.py --rules=libfshfs/validation_rules.yaml

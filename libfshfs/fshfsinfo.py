@@ -28,7 +28,7 @@ class FsHfsInfoOutputParser:
         "entry modification time": "change_time",
         "file mode": "file_mode",
         "group identifier": "group_identifier",
-        "identifier": "identifier",
+        "identifier": "inode_number",
         "modification time": "modification_time",
         "name": "name",
         "number of links": "number_of_links",
@@ -52,7 +52,7 @@ class FsHfsInfoOutputParser:
     DECIMAL_ATTRIBUTES = frozenset(
         [
             "group_identifier",
-            "identifier",
+            "inode_number",
             "number_of_links",
             "parent_identifier",
             "size",

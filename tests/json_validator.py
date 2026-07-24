@@ -13,7 +13,7 @@ class CliToolOutputJsonValidatorTest(test_lib.BaseTestCase):
     """Tests for the JSON normalized CLI tool output validator."""
 
     def test_compare_date_time_value(self):
-        """Tests the _is_date_time_value function."""
+        """Tests the _compare_date_time_value function."""
         rules = []
         validator = json_validator.CliToolOutputJsonValidator(rules)
 
@@ -75,6 +75,21 @@ class CliToolOutputJsonValidatorTest(test_lib.BaseTestCase):
             "reference_value": "2026-05-20T17:44:28.893595285Z",
         }
         self.assertEqual(result, expected_result)
+
+    def test_convert_date_time_value(self):
+        """Tests the _convert_date_time_value function."""
+        rules = []
+        validator = json_validator.CliToolOutputJsonValidator(rules)
+
+        result = validator._convert_date_time_value(
+            "2026-05-20T99:44:28.893595285", "seconds"
+        )
+        self.assertEqual(result, "2026-05-20T99:44:28")
+
+        with self.assertRaises(RuntimeError):
+            validator._convert_date_time_value(
+                "2026-05-20T99:44:28.893595285Z", "bogus"
+            )
 
     def test_is_date_time_value(self):
         """Tests the _is_date_time_value function."""

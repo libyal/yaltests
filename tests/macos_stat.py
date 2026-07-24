@@ -14,7 +14,7 @@ class StatOutputParserTest(test_lib.BaseTestCase):
     # TODO: add tests for _parse_date_time
     # TODO: add tests for _parse_hexadecimal
 
-    def test_parse_with_ext2_inode256(self):
+    def test_parse(self):
         """Tests the parse function with HFS+ Mac OS stat output."""
         test_file = self._get_test_file_path(["macos-15.7.4", "stat.hfsplus.35.txt"])
         self._skip_if_path_not_exists(test_file)

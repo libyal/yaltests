@@ -5,4 +5,4 @@ rules:
   condition: "file_mode & 0x4000 != 0"
   expected_value: 0
 - attributes: [access_time, change_time, creation_time, modification_time]
-  skip_granularity_check: true
+  expected_granularity: "seconds"

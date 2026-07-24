@@ -20,20 +20,31 @@ class ValidationRule:
     Attributes:
       attributes (list[str]): names of the attributes the rule applies to.
       condition (str): condition when to apply the rule.
+      expected_granularity (str): granularity to compare date and time values with,
+          such as "seconds".
       expected_value (object): value to expect when the rule applies.
     """
 
-    def __init__(self, attributes=None, condition=None, expected_value=None) -> None:
+    def __init__(
+        self,
+        attributes=None,
+        condition=None,
+        expected_granularity=None,
+        expected_value=None,
+    ) -> None:
         """Initializes a validation rule.
 
         Args:
           attributes (Optional[list[str]]): names of the attributes the rule applies to.
           condition (Optional[str]): condition when to apply the rule.
+          expected_granularity (Optional[str]): granularity to compare date and time
+              values with, such as "seconds".
           expected_value (Optional[object]): value to expect when the rule applies.
         """
         super().__init__()
         self.attributes = attributes or []
         self.condition = condition
+        self.expected_granularity = expected_granularity
         self.expected_value = expected_value
 
     def _evaluate_ast_node(self, node: ast.AST, values: dict) -> Any:
@@ -111,6 +122,7 @@ class ValidationRule:
         return cls(
             attributes=values.get("attributes"),
             condition=values.get("condition"),
+            expected_granularity=values.get("expected_granularity"),
             expected_value=values.get("expected_value"),
         )
 
@@ -126,6 +138,9 @@ class ValidationRule:
         """
         if name not in self.attributes:
             return False
+
+        if self.condition is None:
+            return True
 
         if not isinstance(self.condition, str):
             return False
@@ -157,7 +172,10 @@ class CliToolOutputJsonValidator:
         self._rules = rules or []
 
     def _compare_date_time_value(
-        self, reference_value: object, output_value: object
+        self,
+        reference_value: object,
+        output_value: object,
+        expected_granularity: str = None,
     ) -> dict:
         """Compares 2 values contains a date time value.
 
@@ -166,6 +184,8 @@ class CliToolOutputJsonValidator:
         Args:
           reference_value (object): reference value.
           output_value (object): output value.
+          expected_granularity (Optional[str]): granularity to compare date and time
+              values with, such as "seconds".
 
         Returns:
           dict[str, str]: comparison result which is an empty dictionary if the values
@@ -184,6 +204,11 @@ class CliToolOutputJsonValidator:
                 if reference_value.endswith("Z")
                 else reference_value
             )
+            if expected_granularity:
+                iso8601_string = self._convert_date_time_value(
+                    iso8601_string, expected_granularity
+                )
+
             reference_value_length = len(iso8601_string)
 
             if reference_value_length == 10:
@@ -234,6 +259,24 @@ class CliToolOutputJsonValidator:
 
         return {}
 
+    def _convert_date_time_value(self, value: str, granularity: str) -> str:
+        """Converts a date time value into the specified granularity.
+
+        Args:
+          value (str): value, which contains an ISO 8601 string without trailing Z.
+          granularity (str): granularity, such as "seconds".
+
+        Returns:
+          str: date time value in expected granularity.
+        """
+        if granularity not in ("seconds",):
+            raise RuntimeError(f"Unsupported granularity: {granularity:s}")
+
+        if "." in value:
+            value, _ = value.split(".", maxsplit=1)
+
+        return value
+
     def _is_date_time_value(self, value: object) -> bool:
         """Checks if a value contains a date time value.
 
@@ -279,9 +322,11 @@ class CliToolOutputJsonValidator:
             reference_value = reference_dict[key]
             output_value = output_dict[key]
 
+            expected_granularity = None
             expected_value = None
             for rule in self._rules:
                 if rule.matches(key, output_dict):
+                    expected_granularity = rule.expected_granularity
                     expected_value = rule.expected_value
                     break
 
@@ -290,7 +335,9 @@ class CliToolOutputJsonValidator:
 
             if self._is_date_time_value(reference_value):
                 compare_result = self._compare_date_time_value(
-                    expected_value, output_value
+                    expected_value,
+                    output_value,
+                    expected_granularity=expected_granularity,
                 )
                 if compare_result:
                     value_mismatches[key] = compare_result

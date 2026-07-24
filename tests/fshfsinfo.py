@@ -30,7 +30,7 @@ class FsHfsInfoOutputParserTest(test_lib.BaseTestCase):
             "backup_time": None,
             "file_mode": 0o100644,
             "group_identifier": 20,
-            "identifier": 35,
+            "inode_number": 35,
             "metadata": {"version": "20260626"},
             "modification_time": "2026-05-21T01:51:16Z",
             "name": "xattr1",
