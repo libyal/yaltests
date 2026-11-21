@@ -2,7 +2,7 @@
 """Parses coreutils stat output.
 
 To create stat output:
-    TZ=UTC find mountpoint/ -inum 22 -exec stat --format=${FORMAT} {} + 2>/dev/null
+    TZ=UTC find mountpoint/ -inum 22 -exec stat -f ${FORMAT} {} + 2>/dev/null
 
 Where FORMAT is:
     '{

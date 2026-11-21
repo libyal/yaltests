@@ -20,3 +20,7 @@ Generated with the help of the [fat-specimens project](https://github.com/dfirla
 Generated with the help of the [hfs-specimens project](https://github.com/dfirlabs/hfs-specimens):
 
 * test_data/macos-15.7.4/hfsplus.dmg
+
+Generated with the help of the [ntfs-specimens project](https://github.com/dfirlabs/ntfs-specimens):
+
+* test_data/windows_10.0/ntfs.vhd
