@@ -2,6 +2,10 @@ Acknowledgements: yaltests
 
 Copyright (c) 2020-2026, Joachim Metz <joachim.metz@gmail.com>
 
+Generated with the help of the [apfs-specimens project](https://github.com/dfirlabs/apfs-specimens):
+
+* test_data/macos-26.7.2/apfs_single_volume.dmg
+
 Generated with the help of the [ext-specimens project](https://github.com/dfirlabs/ext-specimens):
 
 * test_data/mke2fs-1.45.5/ext2.raw

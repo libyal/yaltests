@@ -1,0 +1,12 @@
+# clitooltester test.
+---
+name: fsapfsinfo
+description: Runs fsapfsinfo on an input file
+docker:
+  dockerfile: libfsapfs/Dockerfile
+  tag: yaltests/libfsapfs
+command: libfsapfs/fsapfstools/fsapfsinfo -E %identifier% -o %volume_offset% %input%
+stdout:
+  normalizer: libfsapfs/fsapfsinfo.py
+  reference_file: data/%input%.json
+  validator: scripts/json_validator.py --rules=libfsapfs/validation_rules.yaml

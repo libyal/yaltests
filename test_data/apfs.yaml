@@ -1,0 +1,37 @@
+# clitooltester inputs.
+---
+set:
+  name: macos-26.7.2
+  description: APFS file system set
+  base_path: test_data
+  elements:
+    - name: apfs_blockdev
+      description: block device in an APFS file system
+      path: macos-26.7.2/apfs_single_volume.dmg
+      parameters:
+        identifier: 49
+        volume_offset: 20480
+    - name: apfs_chardev
+      description: character device in an APFS file system
+      path: macos-26.7.2/apfs_single_volume.dmg
+      parameters:
+        identifier: 50
+        volume_offset: 20480
+    - name: apfs_directory_with_xattr
+      description: directory with extended attribute in an APFS file system
+      path: macos-26.7.2/apfs_single_volume.dmg
+      parameters:
+        identifier: 37
+        volume_offset: 20480
+    - name: apfs_file_with_xattr
+      description: regular file with extended attribute in an APFS file system
+      path: macos-26.7.2/apfs_single_volume.dmg
+      parameters:
+        identifier: 36
+        volume_offset: 20480
+    - name: apfs_pipe
+      description: pipe in an APFS file system
+      path: macos-26.7.2/apfs_single_volume.dmg
+      parameters:
+        identifier: 67
+        volume_offset: 20480

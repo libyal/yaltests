@@ -1,0 +1,19 @@
+fsapfsinfo 20261030
+
+Apple File System (APFS) information:
+
+File entry:
+	Identifier		: 36
+	Name			: xattr1
+	Size			: 0
+	Creation time		: 2026-11-21T09:18:25.823233333Z
+	Modification time	: 2026-11-21T09:18:25.823233333Z
+	Inode change time	: 2026-11-21T09:18:25.831759666Z
+	Access time		: 2026-11-21T09:18:25.823233333Z
+	Number of links		: 1
+	Owner identifier	: 99
+	Group identifier	: 99
+	File mode		: -rw-r--r-- (0100644)
+	Extended attributes:
+		Attribute: 1	: myxattr1
+

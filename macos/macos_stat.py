@@ -26,6 +26,7 @@ import sys
 
 from datetime import datetime
 from datetime import timezone
+from typing import IO
 
 
 class StatOutputParser:
